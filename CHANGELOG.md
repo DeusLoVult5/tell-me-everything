@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0] - 2026-06-04
+
+### Added
+- **钩子硬化**：3 个平台级硬门，从"软约束文本"升级为"硬约束钩子"
+- `scripts/check-plan-mode.py`（PreToolUse）：PLAN 模式无规模声明时 deny 所有 Write/Edit — M5 状态门硬化
+- `scripts/check-boundary.py`（PreToolUse）：拦截写到项目目录外的操作 — 项目边界硬化
+- Stop 钩子（prompt-type）：代码改动后无日志 → block stop — 日志硬门硬化
+- SKILL.md frontmatter 内嵌 hooks 配置（技能激活时自动生效）
+
+### Security
+- 所有钩子 fail-open：脚本崩溃/异常 → 操作放行，不锁死用户
+- 基于 hookify 和 hook-development 已验证代码改造，非自己设计新系统
+
 ## [0.2.2] - 2026-06-04
 
 ### Added

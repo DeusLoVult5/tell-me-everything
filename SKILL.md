@@ -1,6 +1,24 @@
 ---
 name: tell-me-everything
 description: 原生 prompt 的 DLC——把模糊的用户意图翻译成结构化的 AI 输入。用户说"帮我做个记账app"，skill 追问补齐技术栈、架构、安全边界、编码偏好等所有用户知道但没说的信息，然后在动手前出路线图确认。TRIGGER：新项目首次对话、用户说"/init"、用户要求搭建新功能但信息严重不足时。也适合用户说"帮我分析一下这个项目怎么做""从零开始做X"。USE WHEN：用户开始一个新项目、表达了一个模糊的功能需求、或希望生成高质量可落地的代码。
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit|MultiEdit"
+      hooks:
+        - type: "command"
+          command: "python \"${CLAUDE_SKILL_DIR}/scripts/check-plan-mode.py\""
+          timeout: 10
+    - matcher: "Write|Edit|MultiEdit"
+      hooks:
+        - type: "command"
+          command: "python \"${CLAUDE_SKILL_DIR}/scripts/check-boundary.py\""
+          timeout: 10
+  Stop:
+    - matcher: ""
+      hooks:
+        - type: "prompt"
+          prompt: "Check if this session made code changes (Write/Edit/MultiEdit tools were used). If yes, verify that a log entry was written to logs/agent/YYYY-MM-DD.md for today in the project directory. If no log entry exists when code changes were made, block the stop with reason 'Log hard gate: write the change log (step 5 of the protocol) before stopping.'. If no code changes were made, approve the stop."
+          timeout: 30
 ---
 
 # tell-me-everything
