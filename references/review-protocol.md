@@ -1,9 +1,53 @@
 # M7 实现后审查与债务管理
 
+## 实现后完整流程
+
+```
+代码修改完成
+  → ① 写改动日志（如果用户在 I14 选择了"每次改动自动写"）
+  → ② 主动提示审查
+  → ③ 审查完成/跳过
+  → ④ CLAUDE.md 中【当前模式：IMPLEMENT】→【当前模式：PLAN】
+```
+
+## 硬门：日志写入
+
+如果用户在 I14-f 选择了硬门模式（默认）：
+
+**日志必须在 IMPLEMENT→PLAN 切换之前写入。** 不写日志，不许切回 PLAN。
+
+```
+规则：
+  实现完成 → Agent 先写改动日志（logs/agent/YYYY-MM-DD.md）
+  → 日志写完了 → 才能 Edit CLAUDE.md 把【IMPLEMENT】改成【PLAN】
+  
+  如果 Agent "忘了"写日志：
+  → CLAUDE.md 里永远是【当前模式：IMPLEMENT】
+  → 下次对话开始，Agent 读到 IMPLEMENT → 检查上次改动是否有对应日志
+  → 没有 → 补写 → 改回 PLAN
+
+  文件标记不骗人。Agent 可以"忘"，CLAUDE.md 不会忘。
+```
+
+**日志格式（JSON）：**
+
+```json
+{
+  "timestamp": "HH:MM:SS",
+  "summary": "改动内容简要描述",
+  "files": ["改动的文件路径"],
+  "impact": "影响范围（单文件/跨模块/全局）"
+}
+```
+
+**日志文件：** `logs/agent/YYYY-MM-DD.md`，同一天多次改动追加到同一个文件。
+
+**Git commit message 同步：** commit 时在 body 中引用日志条目，保持双线可追溯。
+
 ## 审查触发
 
 ```
-实现完成 → 自动切回 PLAN → Agent 主动报告：
+日志写完后 → Agent 主动报告：
   "本次改动：X 文件 Y 函数，新增 Z 行，影响范围 A/B/C 模块。
    要不要我现在审查一遍？"
   → 用户说"审" → 调用 /review 和 /simplify
