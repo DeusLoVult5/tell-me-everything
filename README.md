@@ -61,3 +61,7 @@ git clone https://github.com/DeusLoVult5/tell-me-everything.git \
 ## 协议
 
 MIT
+
+## 更新日志
+
+[CHANGELOG.md](CHANGELOG.md)
