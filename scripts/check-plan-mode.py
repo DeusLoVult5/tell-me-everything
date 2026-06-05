@@ -1,4 +1,6 @@
-"""PreToolUse hook: M5 state gate — block writes when PLAN mode active without scale declaration.
+"""PreToolUse hook: scale declaration gate — block writes without 【规模：】declaration.
+Any mode (PLAN or IMPLEMENT) without a scale declaration → deny.
+CLAUDE.md writes are exempted so Agent can add scale declarations.
 Adapted from hookify's pretooluse.py and hook-development's validate-write.sh.
 Fail-open: any error → exit 0 (allow operation)."""
 import sys
@@ -10,13 +12,11 @@ def main():
     try:
         input_data = json.load(sys.stdin)
     except (json.JSONDecodeError, IOError):
-        # Fail-open: can't parse input → allow
         print("{}")
         sys.exit(0)
 
     tool_name = input_data.get("tool_name", "")
     if tool_name not in ("Write", "Edit", "MultiEdit"):
-        # Not a file write operation → allow
         print("{}")
         sys.exit(0)
 
@@ -31,33 +31,43 @@ def main():
             print("{}")
             sys.exit(0)
 
+        # Check if target is CLAUDE.md → exempt (Agent needs to write scale declarations)
+        tool_input = input_data.get("tool_input", {})
+        file_path = tool_input.get("file_path", "")
+        if file_path:
+            abs_path = os.path.abspath(file_path).replace("\\", "/")
+            claude_abs = os.path.abspath(claude_md).replace("\\", "/")
+            if abs_path == claude_abs:
+                print("{}")
+                sys.exit(0)
+
         with open(claude_md, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
 
-        # Check: PLAN mode without scale declaration → deny
-        if "【当前模式：PLAN】" in content and "【规模：" not in content:
+        # Gate: no scale declaration → deny (any mode)
+        # Scale declaration is the only pass. Mode is auxiliary info.
+        if "【规模：" not in content:
+            current_mode = "PLAN" if "【当前模式：PLAN】" in content else "IMPLEMENT"
             result = {
                 "hookSpecificOutput": {
                     "hookEventName": "PreToolUse",
                     "permissionDecision": "deny",
                 },
                 "systemMessage": (
-                    "PLAN mode active without scale declaration. "
-                    "User must confirm the change scale before writing files. "
-                    "Say 'implement'(实现) to switch to IMPLEMENT mode, "
-                    "or the user will confirm the scale first."
+                    f"No scale declaration found (current mode: {current_mode}). "
+                    "Before writing any non-CLAUDE.md file, add a scale declaration: "
+                    "【规模：微量/小改动/中改动/大改动】+ 【预计改动：file1 / file2】+ 【验证方式：...】. "
+                    "This prevents Agent from silently skipping the scale confirmation step."
                 ),
             }
             print(json.dumps(result))
             sys.exit(2)
 
-        # Allow
-        print(json.dumps({}))
+        print("{}")
         sys.exit(0)
 
     except Exception:
-        # Fail-open: any unexpected error → allow
-        print(json.dumps({}))
+        print("{}")
         sys.exit(0)
 
 
