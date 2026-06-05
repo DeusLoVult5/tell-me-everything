@@ -1,55 +1,57 @@
 # TELL-ME-EVERYTHING / 告诉我一切
 
-> 不是吧？你还在用一句话让AI盲猜你脑子里在想什么？
+English | [中文](README_CN.md)
+
+> **WTF.** You're still feeding AI one-liners and praying?
 >
-> 打开Claude Code，"帮我做个记账app"——AI狂写八百行，你一看，好像还行。明天就想用上，你没细想直接跑。崩了。改到半夜，崩了又崩。白熬一宿。
+> Open Claude Code. "Build me an expense tracker." Boom — 800 lines. Looks solid. Tomorrow's the deadline, so you hit run without thinking twice. Crash. Debug till 2 AM. Crash again. Sun's up, nothing works, and you're one bad decision away from rage-quitting programming altogether.
 >
-> 不是AI不行，而是因为你只给了一句模糊需求，让它猜了一百个决策——技术栈、架构、编码风格、测试策略、部署方式。它猜对三个，猜错九十七个，自信满满地把那九十七个错误写成了八百行代码。跑崩是必然，跑通才是撞大运。首版勉强跑通了，加功能、修bug、部署上线——AI每次都在猜。你说过的规则对话一长全忘光。它不知道自己不知道，但特别自信自己知道。
+> It's not the AI. You handed it a single vague sentence and made it guess a hundred decisions — tech stack, architecture, coding style, testing, deployment. It nailed three. Whiffed ninety-seven. Then confidently baked all ninety-seven screw-ups into 800 lines of code. The crash wasn't a bug. It was inevitable.
 >
-> 根子上缺的不是一个更严的审查员。缺的是一层翻译——在AI动手之前，替你把那些你没说、但AI需要知道的事，一件一件问清楚。技术栈、架构偏好、编码风格、安全边界、测试策略——你脑子里装着答案，只是没意识到AI不知道。问完了，AI拿到的不再是一句模糊需求，而是你确认过的完整输入。猜的少了，对的多了。
+> And that's just the warm-up. Even after you brute-force the first version into something that kinda runs, the AI forgets every rule you set the moment the conversation stretches long. You said "ask me before touching anything." Context compresses. Poof. You say "add an export button." It silently rewrites five files, pulls in some random library you've never heard of, and you don't find out until it's way too late for `git revert` to save you.
 >
-> **TELL-ME-EVERYTHING**做的就是这一层翻译。初始化时弹选择题——你只管选，不用打字——生成一份CLAUDE.md，每次对话AI自动读取。首版交付后不沉睡：加功能走规模评判，发版本走安全检查，写不完日志不许切回讨论模式。规则写进文件——AI会忘，文件不会。从一句模糊需求到每次精准输出，中间只差这一层。
+> The real problem isn't your prompting. You know exactly what you want — you just didn't realize the AI knows nothing until you spell it out. What's missing is a layer that grabs the AI by the collar every single time it's about to touch a file and says: *hold up. ask first.* Not once. Every. Single. Time.
 >
-> **TELL-ME-EVERYTHING**不问你是什么水平，只问你的项目需要什么。你可能是刚装好Python的大一新生，正在做人生第一个课程设计。你可能是自学转码的社畜，深夜两点还在跟React的useState死磕。你可能已经写了三年代码，但每次让AI帮你改东西出来的结果都像抽卡——SSR还是R卡全看运气。把那个从"帮我做个XX"开始的vibe coder，变成每次都能让AI精准输出的vibe coding大佬。这就是**TELL-ME-EVERYTHING**。
+> **TELL-ME-EVERYTHING** is that layer. It sits between you and the AI — a translation layer made of multiple-choice questions. You click, done. No typing required. Tech stack, architecture, coding conventions, security boundaries — all the stuff you forgot to mention because you assumed the AI just knew. It spits out a CLAUDE.md that the AI reads at the start of every session. And it doesn't go to sleep after the first release — scale gates on new features, security checks on deploy, mandatory review prompts, logs that block the next step until they're written. Rules live in files. Files don't forget.
 
 ---
 
-## 它做什么
+## What It Does
 
-在你和AI之间架一层翻译。初始化时弹选择题——技术栈、架构偏好、编码风格、安全边界——你只管选，不用打字。选完生成一份 CLAUDE.md，AI 每次对话自动读取，不再猜你的意图。首版交付后不沉睡——加功能走规模评判，发版本走安全检查，改完代码必须审查、写日志、切回讨论模式。每一步都有硬门卡着，上下文压得再薄也绕不过去。
+**TELL-ME-EVERYTHING** puts a translation layer between you and the AI. During setup, it fires multiple-choice questions — tech stack, architecture, coding style, security boundaries. You click, done. No typing. It generates a CLAUDE.md that the AI reads at the start of every session, so it stops guessing what you want. And it doesn't clock out after v1.0 — new features go through scale gates, deploys trigger security checks, code changes require review, and the session can't wrap until the change log is written. Every gate is backed by a file on disk. Context compresses. Files don't.
 
-## 为什么用它
+## Why Use It
 
-AI拿到一句模糊需求会猜一百个决策——猜错是常态。首版勉强跑通后，上下文一长，你说过的规则全忘光，AI回到猜的原始状态。这不是你的提示词写得不好——缺的是一层在每次AI准备动手之前把它拦住的东西，不是提醒一次，每次都要。规则写进文件——AI会忘，文件不会。从一句模糊需求到每次精准输出，中间只差这一层翻译。
+Give an AI a one-liner and it'll guess a hundred decisions. Most of them wrong. Get the first version limping along and it seems fine — until the conversation grows long, the context window stretches, and every rule you set evaporates. The AI slides right back into guessing mode. This isn't a skill issue on your end. It's a missing structural layer — something that stops the AI before every write and forces the conversation that should have happened first. Not a one-time reminder. A gate. Rules written to disk, checked every time, immune to context drift. That's the difference between "why does this keep breaking" and "oh, that's exactly what I wanted."
 
 ---
 
-## 怎么工作的
+## How It Works
 
 ```
-你："帮我做个记账app"
+You: "build me an expense tracker"
   ↓
-skill 弹选择题：隐私边界？技术栈？架构？编码风格？测试？部署？
+Skill fires multiple-choice: privacy? tech stack? architecture? coding style? testing? deploy?
   ↓
-你选完（不用打字），skill 生成 CLAUDE.md ← AI 每次对话都会读
+You click through (no typing). Skill generates CLAUDE.md ← AI reads it every session
   ↓
-AI 拿到的不再是模糊需求，是你确认过的结构化输入
+AI no longer gets a vague one-liner — it gets structured input you confirmed
   ↓
-猜的少了，对的多了
+Less guessing. More nailing it.
 ```
 
-**首版交付后不沉睡。** 你后面加功能、修 bug、发布开源——每次 AI 准备动手，硬门还在：
+**Doesn't clock out after v1.0.** New features, bug fixes, deploys — gates stay up:
 
-| 阶段 | 硬门 |
+| Phase | Gate |
 |------|------|
-| 动工前 | 规模评判（就改一行还是整个新模块？）→ 你确认 |
-| 写代码中 | AI 在已确认的边界内操作 |
-| 写完后 | 自动提示审查 → 你必须写了日志才能切回"讨论模式" |
-| 任何时候 | AI 催你"开始写吧"被拒 2 次 → 锁死，不能再催 |
+| Before touching code | Scale assessment (one-line tweak or a whole new module?) → you confirm |
+| Writing code | AI operates within confirmed boundaries |
+| After writing | Auto-prompted review → change log must be written before switching back to "discuss mode" |
+| Anytime | AI nudges "ready to start?" and gets shut down twice → locked. Can't ask again |
 
 ---
 
-## 安装
+## Install
 
 ```bash
 git clone https://github.com/DeusLoVult5/tell-me-everything.git \
@@ -58,35 +60,35 @@ git clone https://github.com/DeusLoVult5/tell-me-everything.git \
 
 ---
 
-## 触发
+## Triggers
 
-- **新项目**：空目录打开 Claude Code → 自动触发
-- **手动**：输入 `/tell-me-everything`
-- **模糊需求**：你的第一次请求信息严重不足时自动加载
-- **发布/开源**：你说"上线""发版本"→ 自动加载发布安全检查
-
----
-
-## 怎么设计的
-
-| 机制 | 解决什么 |
-|------|---------|
-| **15 维度分级访谈** | S 级（安全/隐私/路径）死也要问。A 级（技术栈/架构）追问一次。B 级（风格/日志）问一次跳过 |
-| **43 项默认参数** | 编码风格、日志格式、版本控制……没时间细聊就按默认走，想改随时改 |
-| **混合状态门** | AI 靠信号词判断你让不让动手——"实现"=动手，"搞吧"=弹框跟你确认，"别动"=不动。不靠猜 |
-| **反推动计数器** | AI 催你"可以写了吧？"被拒 2 次 → 锁死讨论模式，直到你亲口说"实现" |
-| **决策原子性** | 一个弹框只问一个决策。"做什么"和"谁来做"分两个问题 |
-| **日志硬门** | 不写改动日志不许切回 PLAN。AI 可以忘了写——CLAUDE.md 不会忘。下次对话自动检测 |
-| **维护/扩展/发布** | 首版不是终点。加功能走规模评判，发版本走安全检查 |
-| **隐式信号解读** | 不问你"我做得好吗"。从你的行为中判断方向对不对 |
-| **钩子硬化** | 不是靠Agent自觉。平台级PreToolUse钩子——没有规模声明不许写文件，写到项目目录外直接拦截 |
+- **New project**: open Claude Code in an empty directory → auto-trigger
+- **Manual**: type `/tell-me-everything`
+- **Vague request**: your first prompt is too thin → auto-loads
+- **Release / open-source**: you say "ship it" / "release" → loads security checklist
 
 ---
 
-## 协议
+## Design
+
+| Mechanism | What It Solves |
+|-----------|---------------|
+| **15-dimension tiered interview** | S-tier (security/privacy/paths) gets asked no matter what. A-tier (tech stack/architecture) asked once. B-tier (style/logging) asked once, skipped if you don't care |
+| **43 default parameters** | Coding style, log format, version control... defaults handle the boring stuff, you override anytime |
+| **Hybrid state gate** | Signal words control the gate — "implement" = go, "go ahead" = pop a confirmation, "hold up" = stay in discuss mode. No guessing |
+| **Anti-push counter** | AI nudges "ready to start?" and gets rejected twice → locked out of asking. You say the signal word to unlock |
+| **Decision atomicity** | One question per popup. "What to do" and "who does it" are two separate questions |
+| **Log hard gate** | Can't flip IMPLEMENT→PLAN without writing the change log. AI can forget. CLAUDE.md won't. Next session catches it |
+| **Maintain / extend / release** | v1.0 isn't the finish line. New features go through scale gates, deploys go through security checks |
+| **Implicit signal reading** | Doesn't ask "did I do a good job?" Reads direction from your behavior instead |
+| **Hook hardening** | Not relying on AI self-discipline. Platform-level PreToolUse hooks — no scale declaration, no file writes. Writes outside project directory get blocked |
+
+---
+
+## License
 
 MIT
 
-## 更新
+## Updates
 
 [CHANGELOG.md](CHANGELOG.md)
