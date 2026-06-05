@@ -13,6 +13,9 @@
 - 所有钩子 fail-open：脚本崩溃/异常 → 操作放行，不锁死用户
 - 基于 hookify 和 hook-development 已验证代码改造，非自己设计新系统
 
+### Fixed
+- **规模声明门逃逸**（`b7329e9`）：Agent 将 CLAUDE.md 从 PLAN 改成 IMPLEMENT 即可绕过所有门 → 改为"无规模声明=deny（任何模式）"，仅豁免 CLAUDE.md 写入。规模声明成为唯一通行证
+
 ## [0.2.2] - 2026-06-04
 
 ### Added
