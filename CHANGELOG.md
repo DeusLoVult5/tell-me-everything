@@ -8,6 +8,11 @@
 - `scripts/check-boundary.py`（PreToolUse）：拦截写到项目目录外的操作 — 项目边界硬化
 - Stop 钩子（prompt-type）：代码改动后无日志 → block stop — 日志硬门硬化
 - SKILL.md frontmatter 内嵌 hooks 配置（技能激活时自动生效）
+- **双语 README**（`7f492b7`）：英文默认（README.md）+ 中文版（README_CN.md），顶部互加语言切换链接
+
+### Changed
+- 初始化命令 `/init` → `/tell-me-everything`（`6214add`）
+- README 双语标题：`# TELL-ME-EVERYTHING / 告诉我一切`
 
 ### Security
 - 所有钩子 fail-open：脚本崩溃/异常 → 操作放行，不锁死用户
