@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.0] - 2026-06-06（feat/template-refactor 分支，热开发中）
+
+### Changed
+- **架构重构：指令式 → 模板式**（`570a5e0`）。借鉴 Codex Startup Pressure Test Skill 的模板范式
+- SKILL.md：260→199 行（-23%），新增 Modes/First Move/Default Output Template/Default Limits
+- references：7→6 文件，总行数 940→513（-45%）
+- 全部核心协议改为卡片格式：门控卡片、审查卡片、后段卡片、访谈模板
+- interview-guide.md 合并到 quick-diagnosis.md
+
+### Added
+- **Modes**：quick / full / ship / maintain 四种显式入口
+- **First Move**：quick 模式 3 问快捷诊断（前端/后端？数据存哪？谁用？）→ 快速诊断 → 分支
+- **Default Output Template**：方案输出强制模板（标题≤15字，步骤≤5个，全文≤200字）
+- **Default Limits**：输出大小硬约束
+
+### Removed
+- `references/interview-guide.md`（合并到 quick-diagnosis.md）
+
 ## [0.3.0] - 2026-06-04
 
 ### Added
