@@ -85,6 +85,10 @@ git clone https://github.com/DeusLoVult5/tell-me-everything.git \
 
 ---
 
+## 致谢
+
+设计参考 [Codex Startup Pressure Test Skill](https://github.com/Kappaemme-git/codex-startup-pressure-test-skill)（模板范式 / Modes 设计）和 [World-Model Method](https://github.com/Renhuai123/world-model-method)（路径比选 / 渲染分离 / 自检循环）。
+
 ## 协议
 
 MIT

@@ -85,6 +85,10 @@ git clone https://github.com/DeusLoVult5/tell-me-everything.git \
 
 ---
 
+## Acknowledgments
+
+Design inspired by [Codex Startup Pressure Test Skill](https://github.com/Kappaemme-git/codex-startup-pressure-test-skill) (template paradigm / Modes pattern) and [World-Model Method](https://github.com/Renhuai123/world-model-method) (path comparison / render-separate-from-plan / self-check loop).
+
 ## License
 
 MIT
