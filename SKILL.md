@@ -26,53 +26,69 @@ hooks:
 > 用户与 AI 之间的翻译层。把模糊意图翻译成结构化输入。
 > 问完了再动手。问不完，不动手。
 
+## 预模式闸门 — S1-S3
+
+**任何模式触发后，第一步不是进 First Move——是确认 S1-S3。这三项不知道，后面的方案都建在沙子上。**
+
+```
+S1 — 隐私与安全
+    "项目是个人的还是公司的？涉及敏感数据吗？能上传代码/调外部API吗？"
+    选项（单选）：个人项目，无限制 / 个人项目，有限制（需说明） / 公司项目，有合规要求
+
+S2 — 项目边界
+    "AI 能碰哪些文件？不能碰哪些？"
+    选项（单选）：限定项目目录内 / 可读工作区不写 / 工作区内自由 / 别碰代码之外的文件
+
+S3 — 操作确认阈值
+    "哪些操作需要先问你？"
+    逐项确认（单选 ×6）：读文件 / 写文件 / 删文件 / 跑命令 / Git操作 / 安装依赖
+    每项：自动 / 先问我
+    确认有效期：仅本次 / 本次会话 / 永久
+
+S1-S3 全部确认 ✔ → 进入对应模式的 First Move。
+```
+
 ## Modes
 
 | 触发 | 模式 | 做什么 | 耗时 |
 |------|------|--------|------|
-| `/tell-me-everything quick` / "帮我分析一下X" | **quick** | 3 个快捷问题 → 快速诊断 + 路线图。默认参数补位 | ~30s |
-| `/tell-me-everything full` / "初始化这个项目" | **full** | S → A → B 全维度访谈。已有答案跳过 | ~3-5min |
+| `/tell-me-everything` / 新项目/新功能/重构请求 | **full** | S4-S6 → A → B 全维度访谈。已有答案跳过 | ~3-5min |
+| 任何改动请求（bugfix/格式变更等） | **maintain** | 规模评判 → 门控 → 实现 → M7+日志 | 按需 |
 | `/tell-me-everything ship` / "上线"/"发版本" | **ship** | R1-R6 发布安全检查 | ~1min |
-| 任何改动请求 | **maintain** | 规模评判 → 门控 → 实现 → M7+日志 | 按需 |
+| `/debug-tme` / `/debug-tme session\|compliance\|files\|state` | **debug** | 对话审计 + 协议合规 + 文件追踪 + 状态快照。详见 `references/debug-guide.md` | ~30s |
 
-未指定模式时默认走 `quick`。
-
-## First Move — quick mode
-
-```
-用户触发 TME（无显式模式）
-  →
-"我帮你补全了再动手。先问三个问题："
-
-弹 AskUserQuestion（3个快捷问题）：
-  Q1: 纯前端还是前后端？    → 决定 I5技术栈 + I6架构
-  Q2: 数据存哪（本地/云端）？→ 决定 I1隐私 + I5数据库
-  Q3: 谁用（练手/自用/上线）？→ 决定 I4目标 + I7部署
-
-用户答完 →
-  自动分析 + 弹框：
-  "快速分析：{摘要}。风险点：{2-3个}。
-   建议Phase 1：{技术栈+交付物}。
-
-   接下来你想："
-  ├─ "完整初始化" → 切 full 模式（S+A+B，跳过已答3问）
-  ├─ "先出方案"   → 基于3个答案+默认参数，直接出路线图
-  └─ "就按这个来"  → 切 IMPLEMENT，开始动手
-```
-
-如果用户连 3 个问题都答不上来 → "我不懂"处理协议（见下）。
+未指定模式时默认走 `full`。
 
 ## First Move — full mode
 
 ```
-触达 full →
-  "完整初始化。S级4问先过掉。"
+触达 full（闸门 S1-S3 已过）→
+  "S1-S3 确认了。继续 S4-S6。"
 
-  按 interview-guide.md S级模板逐问弹框：
-    I1 隐私安全 → I2 项目边界 → I3 确认阈值 → Env 环境路径
+  按 references/quick-diagnosis.md S级模板逐问弹框：
+    S4 Env 环境路径 → S5 确认后有效期 → S6 环境操作"谁来"
 
-  → 根据 S 级答案决定 A 级追问深度
+  S 级全部完成 ✔ → 进入 A 级
+
+  A 级第一问 — A10 参考优先（不可跳过）
+    "有没有参考项目或类似效果的东西？有就发给我，没有我帮你搜。"
+
+  → 根据 S 级答案决定其余 A 级追问深度
   → B 级只在用户说"更多"时展开
+```
+
+## First Move — debug mode
+
+```
+/debug-tme [mode] 触发
+  →
+1. 运行 python scripts/debug-tme.py init [mode]
+   → 创建 .claude/debug/YYYY-MM-DD-HHmmss/ 目录及占位文件
+2. 按 references/debug-guide.md 各文件内容规范逐文件填充
+   → 从当前对话上下文提取信息
+   → 证据坐标精确到文件:行号或具体原文
+3. 写入对应文件（Write 工具 — check-plan-mode.py 已豁免 .claude/debug/）
+4. 报告输出路径："Debug 输出：.claude/debug/YYYY-MM-DD-HHmmss/"
 ```
 
 ## Default Output Template — 方案输出
@@ -207,3 +223,4 @@ Agent 出方案时，用此模板。不增不减。
 | `references/review-protocol.md` | M7 审查 + 重构六步骤 |
 | `references/output-template.md` | CLAUDE.md + CLAUDE.d/ 生成模板 |
 | `references/quick-diagnosis.md` | S 级快捷访谈 + A/B 级完整访谈指南 |
+| `references/debug-guide.md` | Debug 协议卡片 — 5 个触发命令、输出规范、审计硬约束 |

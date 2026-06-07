@@ -1,6 +1,7 @@
 """PreToolUse hook: scale declaration gate — block writes without 【规模：】declaration.
 Any mode (PLAN or IMPLEMENT) without a scale declaration → deny.
 CLAUDE.md writes are exempted so Agent can add scale declarations.
+Debugg output (.claude/debug/) is exempted — audit data, not project code.
 Adapted from hookify's pretooluse.py and hook-development's validate-write.sh.
 Fail-open: any error → exit 0 (allow operation)."""
 import sys
@@ -38,6 +39,13 @@ def main():
             abs_path = os.path.abspath(file_path).replace("\\", "/")
             claude_abs = os.path.abspath(claude_md).replace("\\", "/")
             if abs_path == claude_abs:
+                print("{}")
+                sys.exit(0)
+
+            # Exempt .claude/debug/ — audit output, not project code
+            debug_dir = os.path.join(project_dir, ".claude", "debug")
+            debug_abs = os.path.abspath(debug_dir).replace("\\", "/")
+            if abs_path.startswith(debug_abs + "/"):
                 print("{}")
                 sys.exit(0)
 
