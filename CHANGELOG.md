@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4.0] - 2026-06-06（feat/template-refactor 分支，热开发中）
+## [0.4.0] - 2026-06-16（feat/template-refactor 分支，热开发中）
 
 ### Changed
 - **架构重构：指令式 → 模板式**（`570a5e0`）。借鉴 Codex Startup Pressure Test Skill 的模板范式
@@ -8,12 +8,21 @@
 - references：7→6 文件，总行数 940→513（-45%）
 - 全部核心协议改为卡片格式：门控卡片、审查卡片、后段卡片、访谈模板
 - interview-guide.md 合并到 quick-diagnosis.md
+- **删除 quick 模式**：概设确认与编码实现应分开。bugfix/格式变更走 maintain，其余走 full
+- **S 级分层**：闸门 S1-S3（所有模式必经） + 后半 S4-S6（full 模式）
 
 ### Added
-- **Modes**：quick / full / ship / maintain 四种显式入口
-- **First Move**：quick 模式 3 问快捷诊断（前端/后端？数据存哪？谁用？）→ 快速诊断 → 分支
-- **Default Output Template**：方案输出强制模板（标题≤15字，步骤≤5个，全文≤200字）
+- **Modes**：full / maintain / ship / debug 四种显式入口
+- **预模式闸门 S1-S3**：所有模式触发后第一步。写入 CLAUDE.md 后方可进入模式路由
+- **A10 参考优先**：S 级过后首个 A 级提问（有无参考项目）
+- **Debug 模块**（`references/debug-guide.md` + `scripts/debug-tme.py`）：5 个触发命令，输出到 `.claude/debug/`
+- **Default Output Template**：方案输出强制模板
 - **Default Limits**：输出大小硬约束
+- quick-diagnosis.md 改为完整访谈指南（去 Quick Mode，S 级拆两层）
+
+### Fixed
+- **新项目零保护漏洞**（`cgh_debug` 案例）：无 CLAUDE.md 时两条钩子均 exit 0 放行。修复为无 CLAUDE.md → deny + 提示 S1-S3
+- **Debug 三 Bug**：缺 First Move、路径解析错误（写进 skill 库）、PLAN 模式死锁
 
 ### Removed
 - `references/interview-guide.md`（合并到 quick-diagnosis.md）
