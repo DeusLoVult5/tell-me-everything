@@ -6,12 +6,12 @@ hooks:
     - matcher: "Write|Edit|MultiEdit"
       hooks:
         - type: "command"
-          command: "python \"${CLAUDE_SKILL_DIR}/scripts/check-plan-mode.py\""
+          command: "python \"C:/Users/Dle/.claude/skills/tell-me-everything/scripts/check-plan-mode.py\""
           timeout: 10
     - matcher: "Write|Edit|MultiEdit"
       hooks:
         - type: "command"
-          command: "python \"${CLAUDE_SKILL_DIR}/scripts/check-boundary.py\""
+          command: "python \"C:/Users/Dle/.claude/skills/tell-me-everything/scripts/check-boundary.py\""
           timeout: 10
   Stop:
     - matcher: ""
